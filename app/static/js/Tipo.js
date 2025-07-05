@@ -1,8 +1,6 @@
-
 $(document).ready(function() {
     buscar_tip();
     var edit = false; 
-
     $('#form-crear-tipo').submit(e => {
         let nombre_tipo = $('#nombre-tipo').val();
         let id_editado = $('#id_editar_tip').val();
@@ -25,7 +23,6 @@ $(document).ready(function() {
         });
         e.preventDefault();
     });
-
     function buscar_tip(consulta = '') {
         $.post('/tipo/buscar', { consulta }, (response) => {
             let template = '';
@@ -46,12 +43,10 @@ $(document).ready(function() {
             $('#tipos').html(template);
         });
     }
-
     $(document).on('keyup', '#buscar-tipo', function() {
         let valor = $(this).val();
         buscar_tip(valor);
     });
-
     $(document).on('click', '.borrar-tip', function() {
         const elemento = $(this).closest('tr');
         const id = $(elemento).attr('tipId');
@@ -80,7 +75,6 @@ $(document).ready(function() {
             }
         });
     });
-
     $(document).on('click', '.editar-tip', function() {
         const elemento = $(this).closest('tr');
         const id = $(elemento).attr('tipId');

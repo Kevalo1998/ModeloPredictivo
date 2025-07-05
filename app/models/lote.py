@@ -1,12 +1,11 @@
 from app.db import get_db
-
 class Lote:
     def crearlote(self, id_producto, proveedor, stock, vencimiento):
         db = get_db()
         cur = db.cursor()
         cur.execute("""
             INSERT INTO lote(stock, vencimiento, lote_id_prod, lote_id_prov)
-            VALUES (?, ?, ?, ?)
+            VALUES (%s, %s, %s, %s)
         """, (stock, vencimiento, id_producto, proveedor))
         db.commit()
         return 'add'
@@ -14,7 +13,6 @@ class Lote:
     def buscar(self, consulta=""):
         db = get_db()
         cur = db.cursor()
-
         if consulta:
             cur.execute("""
                 SELECT id_lote, stock, vencimiento, concentracion, adicional,
@@ -47,14 +45,12 @@ class Lote:
             """)
         
         return [dict(row) for row in cur.fetchall()]
-
     def editarlote(self, id_lote, stock):
         db = get_db()
         cur = db.cursor()
         cur.execute("UPDATE lote SET stock = ? WHERE id_lote = ?", (stock, id_lote))
         db.commit()
         return 'edit'
-
     def borrarlote(self, id_lote):
         db = get_db()
         cur = db.cursor()

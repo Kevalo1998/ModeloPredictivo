@@ -37,7 +37,6 @@ $(document).ready(function () {
             $('#avatar').attr('src', usuario.avatar);
         });
     }
-
     $(document).on('click', '.edit', (e) => {
         edit = true;
         $.post('/usuario/capturar', { id_usuario }, (response) => {
@@ -49,7 +48,6 @@ $(document).ready(function () {
             $('#adicional').val(usuario.adicional);
         });
     });
-
     $('#form-usuario').submit((e) => {
         e.preventDefault();
         if (edit) {
@@ -74,7 +72,6 @@ $(document).ready(function () {
             $('#form-usuario').trigger('reset');
         }
     });
-
     $('#form-pass').submit((e) => {
         e.preventDefault();
         const data = {

@@ -22,10 +22,10 @@ $(document).ready(function() {
         });
         e.preventDefault();
     });
-
     function buscar_lab(consulta = '') {
         $.post('/laboratorio/buscar', { consulta }, (laboratorios) => {
             let template = '';
+            console.log(laboratorios);
             laboratorios.forEach(laboratorio => {
                 template += `
                 <tr labId="${laboratorio.id}" labNombre="${laboratorio.nombre}" labAvatar="${laboratorio.avatar}">
@@ -49,11 +49,9 @@ $(document).ready(function() {
             $('#laboratorios').html(template);
         });
     }
-
     $(document).on('keyup', '#buscar-laboratorio', function() {
         buscar_lab($(this).val());
     });
-
     $(document).on('click', '.avatar', (e) => {
         const el = $(e.currentTarget).closest('[labId]');
         $('#logoactual').attr('src', el.attr('labAvatar'));
@@ -61,7 +59,6 @@ $(document).ready(function() {
         $('#funcion').val('cambiar_logo');
         $('#id_logo_lab').val(el.attr('labId'));
     });
-
     $('#form-logo').submit(e => {    
         let formData = new FormData($('#form-logo')[0]);
         $.ajax({
@@ -84,7 +81,6 @@ $(document).ready(function() {
         });
         e.preventDefault();
     });
-
     $(document).on('click', '.borrar', (e) => {
         const el = $(e.currentTarget).closest('[labId]');
         const id = el.attr('labId');
@@ -113,7 +109,6 @@ $(document).ready(function() {
             }
         });
     });
-
     $(document).on('click', '.editar', (e) => {
         const el = $(e.currentTarget).closest('[labId]');
         $('#id_editar_lab').val(el.attr('labId'));

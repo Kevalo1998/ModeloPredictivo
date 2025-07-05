@@ -124,7 +124,6 @@ $(document).ready(function(){
             })
         });
     }
-
     function Eleminar_prod_ls(id) {
         let productos;
         productos=RecuperarLs();
@@ -135,11 +134,9 @@ $(document).ready(function(){
         });
         localStorage.setItem('productos',JSON.stringify(productos));
     }
-
     function Eleminarls(){
         localStorage.clear();
     }
-
     function Contar_productos(){
         let productos;
         let contador=0;
@@ -150,8 +147,6 @@ $(document).ready(function(){
         });
         return contador;
     }
-
-
     function procesar_pedido(){
         let productos;
         productos=RecuperarLs();
@@ -313,7 +308,6 @@ $(document).ready(function(){
         let error=await response.text();
         return error;
     }
-
     function Registrar_compra(nombre,dni){
         funcion='registrar_compra';
         let total=$('#total').get(0).textContent;
@@ -322,6 +316,5 @@ $(document).ready(function(){
         $.post('../controlador/CompraController.php',{funcion,total,nombre,dni,json},(response)=>{
             
         })
-
     }
 })

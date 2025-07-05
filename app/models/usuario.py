@@ -1,10 +1,7 @@
 from app.db import get_db
-from datetime import datetime
-
 class Usuario:
     def __init__(self):
         self.objetos = []
-
     def obtener_datos(self, id_usuario):
         db = get_db()
         sql = """SELECT * FROM usuario 
@@ -14,7 +11,6 @@ class Usuario:
         cur.execute(sql, (id_usuario,))
         self.objetos = cur.fetchall()
         return self.objetos
-
     def editar(self, id_usuario, telefono, residencia, correo, sexo, adicional):
         db = get_db()
         sql = """UPDATE usuario SET telefono_us = %s, residencia_us = %s, 
@@ -23,7 +19,6 @@ class Usuario:
         cur = db.cursor()
         cur.execute(sql, (telefono, residencia, correo, sexo, adicional, id_usuario))
         db.commit()
-
     def cambiar_contra(self, id_usuario, oldpass, newpass):
         db = get_db()
         check_sql = """SELECT * FROM usuario 
@@ -37,7 +32,6 @@ class Usuario:
             db.commit()
             return 'update'
         return 'noupdate'
-
     def cambiar_photo(self, id_usuario, filename):
         db = get_db()
         cur = db.cursor()
@@ -49,7 +43,6 @@ class Usuario:
         cur.execute(update_sql, (filename, id_usuario))
         db.commit()
         return self.objetos
-
     def buscar(self, consulta=""):
         db = get_db()
         cur = db.cursor()
@@ -67,7 +60,6 @@ class Usuario:
         
         rows = cur.fetchall()
         return rows
-
     def crear(self, nombre, apellido, edad, dni, password, tipo, avatar):
         db = get_db()
         cur = db.cursor()
@@ -80,7 +72,6 @@ class Usuario:
         cur.execute(insert_sql, (nombre, apellido, edad, dni, password, tipo, avatar))
         db.commit()
         return 'add'
-
     def ascender(self, pass_input, id_ascendido, id_admin):
         db = get_db()
         cur = db.cursor()
@@ -90,7 +81,6 @@ class Usuario:
             db.commit()
             return 'ascendido'
         return 'noascendido'
-
     def descender(self, pass_input, id_descendido, id_admin):
         db = get_db()
         cur = db.cursor()
@@ -100,7 +90,6 @@ class Usuario:
             db.commit()
             return 'descendido'
         return 'nodescendido'
-
     def borrar_usuario(self, pass_input, id_borrado, id_admin):
         db = get_db()
         cur = db.cursor()

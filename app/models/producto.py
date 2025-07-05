@@ -17,7 +17,6 @@ class Producto:
                     (nombre, concentracion, adicional, precio, laboratorio, tipo, presentacion, avatar))
         db.commit()
         return 'add'
-
     def editar(self, id, nombre, concentracion, adicional, precio, laboratorio, tipo, presentacion):
         db = get_db()
         cur = db.cursor()
@@ -33,7 +32,6 @@ class Producto:
                     (nombre, concentracion, adicional, precio, laboratorio, tipo, presentacion, id))
         db.commit()
         return 'edit'
-
     def buscar(self, consulta=None):
         db = get_db()
         cur = db.cursor()
@@ -56,20 +54,17 @@ class Producto:
                            JOIN presentacion pr ON p.prod_present = pr.id_presentacion
                            ORDER BY p.nombre LIMIT 25""")
         return cur.fetchall()
-
     def obtener_stock(self, id_producto):
         db = get_db()
         cur = db.cursor()
         cur.execute("SELECT SUM(stock) AS total FROM lote WHERE lote_id_prod=%s", (id_producto,))
         result = cur.fetchone()
         return result['total'] if result and result['total'] else 0
-
     def cambiar_logo(self, id_producto, avatar):
         db = get_db()
         cur = db.cursor()
         cur.execute("UPDATE producto SET avatar=%s WHERE id_producto=%s", (avatar, id_producto))
         db.commit()
-
     def borrar(self, id_producto):
         db = get_db()
         cur = db.cursor()
@@ -79,7 +74,6 @@ class Producto:
             return 'borrado'
         except IntegrityError:
             return 'noborrado'
-
     def buscar_por_id(self, id_producto):
         db = get_db()
         cur = db.cursor()

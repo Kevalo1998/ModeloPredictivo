@@ -1,7 +1,5 @@
 {% extends 'layouts/base.html' %}
-
 {% block title %}Propietario | Catalogo{% endblock %}
-
 {% block content %}
   <!--------------------MODALES ATRIBUTO------------------->
 <div class="modal fade" id="cambiologo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -17,7 +15,7 @@
       <div class="modal-body">
 
         <div class="text-center">
-            <img id="logoactual" src="../img/avatar.png" class="profile-user-img img-fluid img-circle">
+            <img id="logoactual" src="{{ url_for('static', filename='img/avatar.png') }}" class="profile-user-img img-fluid img-circle">
         </div>
 
         <div class="text-center">
@@ -239,7 +237,7 @@
       <div class="modal-body">
 
         <div class="text-center">
-            <img id="logoactual_ip" src="../img/avatar.png" class="profile-user-img img-fluid img-circle">
+            <img id="logoactual_ip" src="{{ url_for('static', filename='img/avatar.png') }}" class="profile-user-img img-fluid img-circle">
         </div>
 
         <div class="text-center">
@@ -370,7 +368,6 @@
       </div>
     </div>
   </section>
-
   <section class="content">
     <div class="container-fluid">
       <!-- Tabs -->
@@ -403,7 +400,6 @@
                 <div id="productos" class="card-body row d-flex align-items-stretch"></div>
               </div>
             </div>
-
             <!-- Atributo Tabs -->
             <div class="tab-pane"id="atributo">
                                     <div class="container-fluid">
@@ -512,7 +508,6 @@
                                         </div>
                                     </div>
                                 </div>
-
             <!-- Lote -->
             <div class="tab-pane" id="lote">
               <div class="card card-success">
@@ -528,7 +523,6 @@
                 <div id="lotes" class="card-body row d-flex align-items-stretch"></div>
               </div>
             </div>
-
           </div>
         </div>
       </div>

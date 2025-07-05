@@ -3,24 +3,20 @@ from flask import Blueprint, render_template, session, redirect, url_for
 from datetime import datetime
 from app.models.laboratorio import Laboratorio
 import os, time
-
 laboratorio_bp = Blueprint('laboratorio', __name__)
 laboratorio_model = Laboratorio()
-
 @laboratorio_bp.route('/laboratorio/crear', methods=['POST'])
 def crear_laboratorio():
     nombre = request.form.get('nombre_laboratorio')
     avatar = 'lab_default.png'
     resultado = laboratorio_model.crear(nombre, avatar)
     return jsonify({'msg': resultado})
-
 @laboratorio_bp.route('/laboratorio/editar', methods=['POST'])
 def editar_laboratorio():
     nombre = request.form.get('nombre_laboratorio')
     id_editado = request.form.get('id_editado')
     resultado = laboratorio_model.editar(nombre, id_editado)
     return jsonify({'msg': resultado})
-
 @laboratorio_bp.route('/laboratorio/buscar', methods=['POST'])
 def buscar_laboratorios():
     consulta = request.form.get('consulta', '')
@@ -30,11 +26,10 @@ def buscar_laboratorios():
         resultado.append({
             'id': lab['id_laboratorio'],
             'nombre': lab['nombre'],
-            'avatar': url_for('static', filename=f'img/{lab["avatar"]}')
+            'avatar': url_for('static', filename=f'img/lab/{lab["avatar"]}')
         })
     return jsonify(resultado)
-
-@laboratorio_bp.route('/laboratorio/cambiar_logo', methods=['POST'])
+laboratorio_bp.route('/laboratorio/cambiar_logo', methods=['POST'])
 def cambiar_logo():
     if 'photo' not in request.files:
         return jsonify({'alert': 'noedit'})
@@ -61,13 +56,11 @@ def cambiar_logo():
             os.remove(anterior_path)
 
     return jsonify({'alert': 'edit', 'ruta': url_for('static', filename=f'img/{filename}')})
-
 @laboratorio_bp.route('/laboratorio/borrar', methods=['POST'])
 def borrar_laboratorio():
     id_laboratorio = request.form.get('id')
     resultado = laboratorio_model.borrar(id_laboratorio)
     return jsonify({'msg': resultado})
-
 @laboratorio_bp.route('/laboratorio/rellenar', methods=['POST'])
 def rellenar_laboratorios():
     laboratorios = laboratorio_model.rellenar_laboratorios()

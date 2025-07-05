@@ -1,12 +1,9 @@
 from flask import Blueprint, request, jsonify, url_for, current_app
 from flask import Blueprint, render_template, session, redirect, url_for
-from datetime import datetime
 import os, time
 from app.models.producto import Producto
-
 producto_bp = Blueprint('producto', __name__)
 producto_model = Producto()
-
 @producto_bp.route('/productos')
 def productos():
     if 'us_tipo' not in session:
@@ -26,7 +23,6 @@ def crear_producto():
         'prod_default.png'
     )
     return 'add'
-
 @producto_bp.route('/producto/editar', methods=['POST'])
 def editar_producto():
     data = request.form
@@ -41,7 +37,6 @@ def editar_producto():
         data.get('presentacion')
     )
     return 'edit'
-
 @producto_bp.route('/producto/buscar', methods=['POST'])
 def buscar_producto():
     productos = producto_model.buscar()
@@ -64,7 +59,6 @@ def buscar_producto():
             'avatar': url_for('static', filename=f'img/prod/{p["avatar"]}')
         })
     return jsonify(resultado)
-
 @producto_bp.route('/producto/cambiar_avatar', methods=['POST'])
 def cambiar_avatar():
     id_producto = request.form.get('id_logo_prod')
@@ -85,13 +79,11 @@ def cambiar_avatar():
                     pass
             return jsonify({'ruta': url_for('static', filename=f'img/prod/{filename}'), 'alert': 'edit'})
     return jsonify({'alert': 'noedit'})
-
 @producto_bp.route('/producto/borrar', methods=['POST'])
 def borrar_producto():
     id_producto = request.form.get('id')
     resultado = producto_model.borrarip(id_producto)
     return jsonify({'msg': resultado})
-
 @producto_bp.route('/producto/buscar_id', methods=['POST'])
 def buscar_id():
     id_producto = request.form.get('id_producto')
@@ -102,7 +94,6 @@ def buscar_id():
         datos['avatar'] = url_for('static', filename=f'img/prod/{datos["avatar"]}')
         return jsonify(datos)
     return jsonify({})
-
 @producto_bp.route('/producto/verificar_stock', methods=['POST'])
 def verificar_stock():
     productos = request.form.get('productos')

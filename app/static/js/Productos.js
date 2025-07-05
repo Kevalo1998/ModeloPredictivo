@@ -7,13 +7,11 @@ $(document).ready(function(){
     rellenar_presentaciones();
     rellenar_proveedores();
     buscar_producto();
-
     if (['2','3','4'].includes(tipo_usuario)) {
         $('#bcp').hide();
     }
-
     function rellenar_laboratorios() {
-        $.post('/producto/rellenar_laboratorios', {}, (response) => {
+        $.post('/laboratorio/rellenar', {}, (response) => {
             let template = '';
             response.forEach(lab => {
                 template += `<option value="${lab.id}">${lab.nombre}</option>`;
@@ -21,9 +19,8 @@ $(document).ready(function(){
             $('#modal_laboratorio').html(template);
         });
     }
-
     function rellenar_tipos() {
-        $.post('/producto/rellenar_tipos', {}, (response) => {
+        $.post('/tipo/rellenar', {}, (response) => {
             let template = '';
             response.forEach(tipo => {
                 template += `<option value="${tipo.id}">${tipo.nombre}</option>`;
@@ -33,7 +30,7 @@ $(document).ready(function(){
     }
 
     function rellenar_presentaciones() {
-        $.post('/producto/rellenar_presentaciones', {}, (response) => {
+        $.post('/presentacion/rellenar', {}, (response) => {
             let template = '';
             response.forEach(pres => {
                 template += `<option value="${pres.id}">${pres.nombre}</option>`;
@@ -41,17 +38,15 @@ $(document).ready(function(){
             $('#modal_presentacion').html(template);
         });
     }
-
     function rellenar_proveedores() {
-        $.post('/producto/rellenar_proveedores', {}, (response) => {
-            let template = '';
-            response.forEach(prov => {
-                template += `<option value="${prov.id}">${prov.nombre}</option>`;
-            });
-            $('#proveedor').html(template);
+    $.post('/producto/rellenar_proveedores', {}, (response) => {
+        let template = '';
+        response.forEach(prov => {
+            template += `<option value="${prov.id}">${prov.nombre}</option>`;
         });
+        $('#proveedor').html(template);
+    });
     }
-
     $('#form-crear-producto').submit(e => {
         e.preventDefault();
         let data = {
@@ -79,10 +74,10 @@ $(document).ready(function(){
             buscar_producto();
         });
     });
-
     function buscar_producto(consulta = '') {
         $.post('/producto/buscar', { consulta }, (productos) => {
             let template = '';
+            console.log(productos);
             productos.forEach(p => {
                 template += `
                 <div prodId="${p.id}" prodNombre="${p.nombre}" prodPrecio="${p.precio}" prodConcentracion="${p.concentracion}" prodAdicional="${p.adicional}" prodLaboratorio="${p.laboratorio_id}" prodTipo="${p.tipo_id}" prodPresentacion="${p.presentacion_id}" prodAvatar="${p.avatar}" class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
@@ -122,11 +117,9 @@ $(document).ready(function(){
             $('#productos').html(template);
         });
     }
-
     $(document).on('keyup', '#buscar-producto', function(){
         buscar_producto($(this).val());
     });
-
     $(document).on('click', '.avatar', function(){
         const el = $(this).closest('[prodId]');
         $('#funcionip').val('cambiar_avatar');
@@ -135,7 +128,6 @@ $(document).ready(function(){
         $('#logoactual_ip').attr('src', el.attr('prodAvatar'));
         $('#nombre_logoip').html(el.attr('prodNombre'));
     });
-
     $('#form-logo-ip').submit(e => {
         const formData = new FormData($('#form-logo-ip')[0]);
         $.ajax({
@@ -158,7 +150,6 @@ $(document).ready(function(){
         });
         e.preventDefault();
     });
-
     $(document).on('click', '.editar', function(){
         const el = $(this).closest('[prodId]');
         $('#id_edit_prod').val(el.attr('prodId'));
@@ -171,7 +162,6 @@ $(document).ready(function(){
         $('#modal_presentacion').val(el.attr('prodPresentacion')).trigger('change');
         edit = true;
     });
-
     $(document).on('click', '.borrarip', function(){
         const el = $(this).closest('[prodId]');
         const id = el.attr('prodId');
@@ -198,25 +188,26 @@ $(document).ready(function(){
             }
         });
     });
-
     $(document).on('click', '.lote', function(){
         const el = $(this).closest('[prodId]');
         $('#id_lote_prod').val(el.attr('prodId'));
         $('#nombre_producto_lote').html(el.attr('prodNombre'));
     });
-
     $('#form-crear-lote').submit(e => {
-        e.preventDefault();
-        let data = {
-            id_producto: $('#id_lote_prod').val(),
-            proveedor: $('#proveedor').val(),
-            stock: $('#stock').val(),
-            vencimiento: $('#vencimiento').val()
-        };
-        $.post('/producto/crearlote', data, (res) => {
-            $('#add-lote').hide('slow').show(1000).hide(2000);
-            $('#form-crear-lote').trigger('reset');
-            buscar_producto();
-        });
+    e.preventDefault();
+    let data = {
+        id_producto: $('#id_lote_prod').val(),
+        proveedor: $('#proveedor').val(),
+        stock: $('#stock').val(),
+        vencimiento: $('#vencimiento').val()
+    };
+
+    console.log(data);  // Verifica que proveedor sea un id numérico
+
+    $.post('/lote/crear', data, (res) => {
+        $('#add-lote').hide('slow').show(1000).hide(2000);
+        $('#form-crear-lote').trigger('reset');
+        buscar_producto();
     });
+});
 });

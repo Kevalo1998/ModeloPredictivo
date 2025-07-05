@@ -10,7 +10,6 @@ class Tipo:
         cur.execute("INSERT INTO tipo_producto(nombre) VALUES (%s)", (nombre,))
         db.commit()
         return 'add'
-
     def buscar(self, consulta=''):
         db = get_db()
         cur = db.cursor()
@@ -19,7 +18,6 @@ class Tipo:
         else:
             cur.execute("SELECT * FROM tipo_producto WHERE nombre NOT LIKE '' ORDER BY id_tip_prod LIMIT 25")
         return cur.fetchall()
-
     def borrar(self, id):
         db = get_db()
         cur = db.cursor()
@@ -29,14 +27,12 @@ class Tipo:
             return 'borrado'
         except:
             return 'noborrado'
-
     def editar(self, nombre, id_editado):
         db = get_db()
         cur = db.cursor()
         cur.execute("UPDATE tipo_producto SET nombre=%s WHERE id_tip_prod=%s", (nombre, id_editado))
         db.commit()
         return 'edit'
-
     def rellenar_tipos(self):
         db = get_db()
         cur = db.cursor()

@@ -1,9 +1,6 @@
 {% extends 'layouts/base.html' %}
-
 {% block title %}Propietario | Proveedor{% endblock %}
-
 {% block content %}
-
 <!-- MODAL CREAR PROVEEDOR -->
 <div class="modal fade" id="crearproveedor" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -53,7 +50,6 @@
     </div>
   </div>
 </div>
-
 <!-- MODAL CAMBIAR LOGO -->
 <div class="modal fade" id="cambiologo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
@@ -67,7 +63,7 @@
         </div>
         <div class="modal-body">
           <div class="text-center">
-            <img id="logoactual" src="{{ url_for('static', filename='img/prov/prov_default.png') }}" class="profile-user-img img-fluid img-circle">
+            <img id="logoactual" src="{{ url_for('static', filename='img/prov/avatar.png') }}" class="profile-user-img img-fluid img-circle">
           </div>
           <div class="text-center mt-2">
             <b id="nombre_logo"></b>
@@ -93,7 +89,6 @@
     </div>
   </div>
 </div>
-
 <!-- PAGE CONTENT -->
 <div class="content-wrapper">
   <section class="content-header">
@@ -102,19 +97,12 @@
         <div class="col-sm-6">
           <h1>
             Proveedores
-            <button type="button" class="btn bg-gradient-primary ml-2" data-toggle="modal" data-target="#crearproveedor">Crear proveedor</button>
-          </h1>
-        </div>
+            <button type="button" class="btn bg-gradient-primary ml-2" data-toggle="modal" data-target="#crearproveedor">Crear proveedor</button></h1></div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="{{ url_for('login.catalogo') }}">Inicio</a></li>
             <li class="breadcrumb-item active">Lista de proveedores</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  </section>
-
+          </ol></div></div></div></section>
   <section>
     <div class="container-fluid">
       <div class="card card-success">
@@ -123,20 +111,11 @@
           <div class="input-group">
             <input type="text" id="buscar_provedor" class="form-control" placeholder="Ingrese nombre de proveedor">
             <div class="input-group-append">
-              <button class="btn btn-default"><i class="fas fa-search"></i></button>
-            </div>
-          </div>
-        </div>
+              <button class="btn btn-default"><i class="fas fa-search"></i></button></div></div></div>
         <div class="card-body">
-          <div id="proveedores" class="row d-flex align-items-stretch"></div>
-        </div>
-      </div>
-    </div>
-  </section>
+          <div id="proveedores" class="row d-flex align-items-stretch"></div></div></div></div></section>
 </div>
-
 {% endblock %}
-
 {% block scripts %}
 <script src="{{ url_for('static', filename='js/Proveedor.js') }}"></script>
 {% endblock %}

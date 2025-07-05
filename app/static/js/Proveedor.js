@@ -1,7 +1,6 @@
 $(document).ready(function () {
     var edit = false;
     buscar_prov();
-
     $('#form-crear').submit(e => {
         let id = $('#id_edit_prov').val();
         let nombre = $('#nombre').val();
@@ -27,13 +26,13 @@ $(document).ready(function () {
         });
         e.preventDefault();
     });
-
     function buscar_prov(consulta = '') {
-        $.post('/proveedor/buscar', { consulta }, (response) => {
+        $.post('/proveedor/buscar', { consulta }, (proveedores) => {
             let template = ``;
-            response.forEach(proveedor => {
+            console.log(proveedores);
+            proveedores.forEach(p => {
                 template += `
-                <div provId="${proveedor.id}" provNombre="${proveedor.nombre}" provTelefono="${proveedor.telefono}" provCorreo="${proveedor.correo}" provDireccion="${proveedor.direccion}" provAvatar="${proveedor.avatar}" class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
+                <div provId="${p.id}" provNombre="${p.nombre}" provTelefono="${p.telefono}" provCorreo="${p.correo}" provDireccion="${p.direccion}" provAvatar="${p.avatar}" class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
                   <div class="card bg-light d-flex flex-fill">
                     <div class="card-header text-muted border-bottom-0">
                       <h1 class="badge badge-success">Proveedor</h1>
@@ -41,16 +40,15 @@ $(document).ready(function () {
                     <div class="card-body pt-0">
                       <div class="row">
                         <div class="col-7">
-                          <h2 class="lead"><b>${proveedor.nombre}</b></h2>
-                          <p class="text-muted text-sm"><b>Acerca de:</b> Diseñador web / UX / Artista gráfico / Amante del café</p>
+                          <h2 class="lead"><b><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">${p.nombre}</font></font></b></h2>
                           <ul class="ml-4 mb-0 fa-ul text-muted">
-                            <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span>Dirección: ${proveedor.direccion}</li>
-                            <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span>Teléfono: +51 ${proveedor.telefono}</li>
-                            <li class="small"><span class="fa-li"><i class="fas fa-lg fa-at"></i></span>Correo: ${proveedor.correo}</li>
+                            <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span>Dirección: ${p.direccion}</li>
+                            <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span>Teléfono: +51 ${p.telefono}</li>
+                            <li class="small"><span class="fa-li"><i class="fas fa-lg fa-at"></i></span>Correo: ${p.correo}</li>
                           </ul>
                         </div>
                         <div class="col-5 text-center">
-                          <img src="${proveedor.avatar}" alt="avatar de proveedor" class="img-circle img-fluid">
+                          <img src="${p.avatar}" alt="avatar de proveedor" class="img-circle img-fluid">
                         </div>
                       </div>
                     </div>
@@ -73,11 +71,9 @@ $(document).ready(function () {
             $('#proveedores').html(template);
         });
     }
-
     $(document).on('keyup', '#buscar_provedor', function () {
         buscar_prov($(this).val());
     });
-
     $(document).on('click', '.avatar', function () {
         const el = $(this).closest('[provId]');
         $('#logoactual').attr('src', el.attr('provAvatar'));
@@ -86,7 +82,6 @@ $(document).ready(function () {
         $('#funcion').val('cambiar_logo');  // opcional si lo usas aún
         $('#avatar').val(el.attr('provAvatar'));
     });
-
     $(document).on('click', '.editar', function () {
         const el = $(this).closest('[provId]');
         $('#id_edit_prov').val(el.attr('provId'));
@@ -96,7 +91,6 @@ $(document).ready(function () {
         $('#correo').val(el.attr('provCorreo'));
         edit = true;
     });
-
     $('#form-logo').submit(e => {
         let formData = new FormData($('#form-logo')[0]);
         $.ajax({
@@ -119,7 +113,6 @@ $(document).ready(function () {
         });
         e.preventDefault();
     });
-
     $(document).on('click', '.borrar', function () {
         const el = $(this).closest('[provId]');
         const id = el.attr('provId');

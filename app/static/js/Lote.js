@@ -1,7 +1,6 @@
 $(document).ready(function(){
     var funcion;   
     buscar_lote();  
-
     function buscar_lote(consulta){
         $.post('/lote/buscar', {consulta}, (response) => {
             const lotes = response;
@@ -59,12 +58,10 @@ $(document).ready(function(){
             $('#lotes').html(template);
         });
     }
-
     $(document).on('keyup','#buscar-lote',function(){
         let valor = $(this).val();
         buscar_lote(valor || "");
     });
-
     $(document).on('click','.editarlot',(e)=>{
         const elemento = $(this)[0].activeElement.closest('[loteId]');
         const id = $(elemento).attr('loteId');
@@ -73,7 +70,6 @@ $(document).ready(function(){
         $('#stocked').val(stock);
         $('#codigo_lote').html(id);
     });
-
     $('#form-editar-lote').submit(e => {
         let id = $('#id_lote_prod_1').val();
         let stock = $('#stocked').val();
@@ -86,7 +82,6 @@ $(document).ready(function(){
         });
         e.preventDefault();
     });
-
     $(document).on('click','.borrarlote',(e) => {
         const elemento = $(this)[0].activeElement.closest('[loteId]');
         const id = $(elemento).attr('loteId');

@@ -1,7 +1,5 @@
 {% extends 'layouts/base.html' %}
-
 {% block title %}Propietario | Editar Datos Personales{% endblock %}
-
 {% block content %}
 <!-- MODAL: CAMBIAR CONTRASEÑA -->
 <div class="modal fade" id="cambiocontra" tabindex="-1" aria-hidden="true">
@@ -40,7 +38,6 @@
     </div>
   </div>
 </div>
-
 <!-- MODAL: CAMBIAR FOTO -->
 <div class="modal fade" id="cambiophoto" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
@@ -83,24 +80,18 @@
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="{{ url_for('login.catalogo') }}">Home</a></li>
-            <li class="breadcrumb-item active">Datos Personales</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  </section>
-
+            <li class="breadcrumb-item active">Datos Personales</li></ol></div></div></div></section>
   <section>
     <div class="content">
       <div class="container-fluid">
         <div class="row">
-
           <!-- PERFIL -->
           <div class="col-md-3">
             <div class="card card-success card-outline">
               <div class="card-body box-profile text-center">
                 <img id="avatar" src="{{ url_for('static', filename='img/avatar.png') }}" class="profile-user-img img-fluid img-circle">
-                <button type="button" data-toggle="modal" data-target="#cambiophoto" class="btn btn-primary btn-sm mt-1">Cambiar Avatar</button>
+                <button type="button" data-toggle="modal" data-target="#cambiophoto" class="btn btn-primary btn-sm mt-1">Cambiar Avatar
+                </button>
                 <input id="id_usuario" type="hidden" value="{{ session['usuario'] }}">
                 <h3 id="nombre_us" class="profile-username text-success">Nombre</h3>
                 <p id="apellidos_us" class="text-muted">Apellido</p>
@@ -109,24 +100,21 @@
                   <li class="list-group-item"><b>DNI</b> <a id="dni_us" class="float-right">12</a></li>
                   <li class="list-group-item"><b>Tipo de Usuario</b> <span id="us_tipo" class="float-right">Administrador</span></li>
                 </ul>
-                <button data-toggle="modal" data-target="#cambiocontra" class="btn btn-block btn-outline-warning btn-sm">Cambiar Contraseña</button>
+                <button data-toggle="modal" data-target="#cambiocontra" class="btn btn-block btn-outline-warning btn-sm">Cambiar Contraseña
+                </button>
               </div>
             </div>
-
             <div class="card card-success">
               <div class="card-header"><h3>Sobre Mi</h3></div>
               <div class="card-body">
                 <p><strong><i class="fas fa-phone mr-1"></i>Teléfono:</strong> <span id="telefono_us" class="text-muted">123456</span></p>
-                <p><strong><i class="fas fa-map-marker-alt mr-1"></i>Residencia:</strong> <span id="residencia_us" class="text-muted">123456</span></p>
+                <p><strong><i class="fas fa-map-marker-alt mr-1"></i>Residencia:</strong> <span id="residencia_us" class="text-muted">123456
+                </span></p>
                 <p><strong><i class="fas fa-at mr-1"></i>Correo:</strong> <span id="correo_us" class="text-muted">123456</span></p>
                 <p><strong><i class="fas fa-face-smile-wink mr-1"></i>Sexo:</strong> <span id="sexo_us" class="text-muted">123456</span></p>
                 <p><strong><i class="fas fa-pencil-alt mr-1"></i>Información Adicional:</strong> <span id="adicional_us" class="text-muted">123456</span></p>
-                <button class="edit btn btn-block bg-gradient-danger">Editar</button>
-              </div>
-              <div class="card-footer"><p class="text-muted">Click para Editar</p></div>
-            </div>
-          </div>
-
+                <button class="edit btn btn-block bg-gradient-danger">Editar</button></div>
+              <div class="card-footer"><p class="text-muted">Click para Editar</p></div></div></div>
           <!-- FORMULARIO DE EDICIÓN -->
           <div class="col-md-9">
             <div class="card card-success">
@@ -154,13 +142,7 @@
                 </form>
               </div>
               <div class="card-footer"><p class="text-muted">Cuidado al ingresar mal sus datos</p></div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </section>
+            </div></div></div></div></div></section>
 </div>
 {% endblock %}
 {% block scripts %}
