@@ -1,133 +1,102 @@
-$(document).ready(function() {
+$(document).ready(function () {
     buscar_pre();
-    var funcion; 
-    var edit=false; 
-    $('#form-crear-presentacion').submit(e=>{
-        let nombre_presentacion=$('#nombre-presentacion').val();
-        let id_editado=$('#id_editar_pre').val();
-        if (edit==false) {
-            funcion='crear';
-        }
-        else{
-            funcion='editar';
-        }
-        $.post('../controlador/PresentacionController.php',{nombre_presentacion,id_editado,funcion},(response)=>{
-            if (response=='add'){
-                $('#add-pre').hide('slow');
-                $('#add-pre').show(1000);
-                $('#add-pre').hide(2000);
-                $('#form-crear-presentacion').trigger('reset');
-                buscar_pre();
-            } 
-            if(response=='noadd') {
-                $('#noadd-pre').hide('slow');
-                $('#noadd-pre').show(1000);
-                $('#noadd-pre').hide(2000);
-                $('#form-crear-presentacion').trigger('reset');
-            }
-            if (response=='edit'){
-                $('#edit-pre').hide('slow');
-                $('#edit-pre').show(1000);
-                $('#edit-pre').hide(2000);
-                $('#form-crear-presentacion').trigger('reset');
-                buscar_pre();
-            } 
-            var edit=false; 
-        });
+    var edit = false;
+
+    $('#form-crear-presentacion').submit(e => {
         e.preventDefault();
+        let nombre_presentacion = $('#nombre-presentacion').val();
+        let id_editado = $('#id_editar_pre').val();
+        let url = edit ? '/presentacion/editar' : '/presentacion/crear';
+
+        $.post(url, {
+            nombre_presentacion: nombre_presentacion,
+            id_editado: id_editado
+        }, response => {
+            if (response === 'add') {
+                $('#add-pre').hide('slow').show(1000).hide(2000);
+                $('#form-crear-presentacion').trigger('reset');
+                buscar_pre();
+            } else if (response === 'noadd') {
+                $('#noadd-pre').hide('slow').show(1000).hide(2000);
+                $('#form-crear-presentacion').trigger('reset');
+            } else if (response === 'edit') {
+                $('#edit-pre').hide('slow').show(1000).hide(2000);
+                $('#form-crear-presentacion').trigger('reset');
+                buscar_pre();
+            }
+            edit = false;
+        });
     });
 
-    function buscar_pre(consulta) {
-        funcion='buscar';
-        $.post('../controlador/PresentacionController.php',{consulta,funcion},(response)=>{
-            const presentaciones=JSON.parse(response);
-            let template='';
-            presentaciones.forEach(presentacion=>{
-                template+=`
-                <tr preId="${presentacion.id}" preNombre="${presentacion.nombre}" >
+    function buscar_pre(consulta = '') {
+        $.post('/presentacion/buscar', { consulta }, response => {
+            let template = '';
+            response.forEach(presentacion => {
+                template += `
+                <tr preId="${presentacion.id}" preNombre="${presentacion.nombre}">
                     <td>
-                        <button class="editar-pre btn btn-success" title="Editar presentacion"type="button" data-toggle="modal" data-target="#crearpresentacion">
+                        <button class="editar-pre btn btn-success" title="Editar presentación" type="button" data-toggle="modal" data-target="#crearpresentacion">
                             <i class="fas fa-pencil-alt"></i>
                         </button>
-                        <button class="borrar-pre btn btn-danger" title="Borrar presentacion">
+                        <button class="borrar-pre btn btn-danger" title="Borrar presentación">
                             <i class="fas fa-trash-alt"></i>
                         </button>
-                    </td>   
+                    </td>
                     <td>${presentacion.nombre}</td>
                 </tr>`;
             });
-            
             $('#presentaciones').html(template);
-        })
+        });
     }
 
-    $(document).on('keyup','#buscar-presentacion',function(){
-        let valor=$(this).val();
-        if(valor!=''){
-            buscar_pre(valor);
-        } else {
-            buscar_pre();
-        }
-    })
+    $(document).on('keyup', '#buscar-presentacion', function () {
+        let valor = $(this).val();
+        buscar_pre(valor);
+    });
 
-    $(document).on('click','.borrar-pre',(e)=> {
-        funcion = "borrar"; 
-        const elemento = $(this)[0].activeElement.parentElement.parentElement;
+    $(document).on('click', '.borrar-pre', function () {
+        const elemento = $(this).closest('tr');
         const id = $(elemento).attr('preId');
-        const nombre = $(elemento).attr('preNombre'); 
-         const swalWithBootstrapButtons = Swal.mixin({
+        const nombre = $(elemento).attr('preNombre');
+
+        const swalWithBootstrapButtons = Swal.mixin({
             customClass: {
-              confirmButton: "btn btn-success",
-              cancelButton: "btn btn-danger mr-1"
+                confirmButton: "btn btn-success",
+                cancelButton: "btn btn-danger mr-1"
             },
             buttonsStyling: false
-          });
-          swalWithBootstrapButtons.fire({
-            title: 'Eliminar '+nombre+'?',
-            text: 'Nose puede recuperar esto',
+        });
+
+        swalWithBootstrapButtons.fire({
+            title: '¿Eliminar ' + nombre + '?',
+            text: 'No se puede recuperar esto',
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: '¡si, borra esto!',
-            cancelButtonText: 'No, Cancelar', 
+            confirmButtonText: '¡Sí, bórralo!',
+            cancelButtonText: 'No, cancelar',
             reverseButtons: true
-          }).then((result) => {
+        }).then((result) => {
             if (result.isConfirmed) {
-                $.post('../controlador/PresentacionController.php',{id,funcion},(response)=>{
-                    var edit=false;  
-                    if (response=='borrado') {
-                        swalWithBootstrapButtons.fire(
-                            'borrado!',
-                            'La presentacion '+nombre+' fue borrado',
-                            'success'
-                        )
+                $.post('/presentacion/borrar', { id }, response => {
+                    if (response === 'borrado') {
+                        swalWithBootstrapButtons.fire('¡Borrado!', 'La presentación ' + nombre + ' fue eliminada.', 'success');
                         buscar_pre();
-                    } 
-                    else {
-                        swalWithBootstrapButtons.fire(
-                            'No se puede borrar!',
-                            'La presentacion '+nombre+' no puede ser borrado, hay productos de este tipo',
-                            'error'
-                        )
-                         
+                    } else {
+                        swalWithBootstrapButtons.fire('¡Error!', 'No se puede borrar la presentación ' + nombre + ', hay productos asociados.', 'error');
                     }
-                })
-            } else if (
-            result.dismiss === Swal.DismissReason.cancel
-            ) {
-              swalWithBootstrapButtons.fire({
-                title: 'Cancelado',
-                text: 'La presentacion '+nombre+' no fue borrado',
-                icon: 'error'
-              });
+                });
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                swalWithBootstrapButtons.fire('Cancelado', 'La presentación ' + nombre + ' no fue eliminada.', 'error');
             }
-          });   
-    })
-    $(document).on('click','.editar-pre',(e)=> { 
-        const elemento = $(this)[0].activeElement.parentElement.parentElement;
+        });
+    });
+
+    $(document).on('click', '.editar-pre', function () {
+        const elemento = $(this).closest('tr');
         const id = $(elemento).attr('preId');
-        const nombre = $(elemento).attr('preNombre'); 
+        const nombre = $(elemento).attr('preNombre');
         $('#id_editar_pre').val(id);
         $('#nombre-presentacion').val(nombre);
-        edit=true;
-    })
+        edit = true;
+    });
 });

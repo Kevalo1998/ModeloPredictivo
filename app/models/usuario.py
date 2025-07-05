@@ -55,17 +55,18 @@ class Usuario:
         cur = db.cursor()
         if consulta:
             sql = """SELECT * FROM usuario 
-                     JOIN tipo_us ON us_tipo = id_tipo_us 
-                     WHERE nombre_us LIKE %s"""
+                    JOIN tipo_us ON us_tipo = id_tipo_us 
+                    WHERE nombre_us LIKE %s"""
             cur.execute(sql, (f'%{consulta}%',))
         else:
             sql = """SELECT * FROM usuario 
-                     JOIN tipo_us ON us_tipo = id_tipo_us 
-                     WHERE nombre_us != '' 
-                     ORDER BY id_usuario LIMIT 25"""
+                    JOIN tipo_us ON us_tipo = id_tipo_us 
+                    WHERE nombre_us != '' 
+                    ORDER BY id_usuario LIMIT 25"""
             cur.execute(sql)
-        self.objetos = cur.fetchall()
-        return self.objetos
+        
+        rows = cur.fetchall()
+        return rows
 
     def crear(self, nombre, apellido, edad, dni, password, tipo, avatar):
         db = get_db()

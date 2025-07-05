@@ -1,319 +1,222 @@
 $(document).ready(function(){
-    var tipo_usuario=$('#tipo_usuario').val();
-    var funcion;
-    var edit=false; 
+    let tipo_usuario = $('#tipo_usuario').val();
+    let edit = false;
     $('.select2').select2();
     rellenar_laboratorios();
     rellenar_tipos();
     rellenar_presentaciones();
-    buscar_producto();
     rellenar_proveedores();
-    if (tipo_usuario==3||tipo_usuario==4||tipo_usuario==2) {
+    buscar_producto();
+
+    if (['2','3','4'].includes(tipo_usuario)) {
         $('#bcp').hide();
     }
-    function rellenar_proveedores() {
-        funcion="rellenar_proveedores";
-        $.post('../controlador/ProveedorController.php',{funcion},(response)=>{
-            const proveedores=JSON.parse(response);
-            let template='';
-            proveedores.forEach(proveedor=>{
-                template+=`
-                    <option value="${proveedor.id}">${proveedor.nombre}</option>
-                `;
-            });
-            $('#proveedor').html(template);
-        })
-    }
+
     function rellenar_laboratorios() {
-        funcion="rellenar_laboratorios";
-        $.post('../controlador/LaboratorioController.php',{funcion},(response)=>{
-            const laboratorios=JSON.parse(response);
-            let template='';
-            laboratorios.forEach(laboratorio=>{
-                template+=`
-                    <option value="${laboratorio.id}">${laboratorio.nombre}</option>
-                `;
+        $.post('/producto/rellenar_laboratorios', {}, (response) => {
+            let template = '';
+            response.forEach(lab => {
+                template += `<option value="${lab.id}">${lab.nombre}</option>`;
             });
             $('#modal_laboratorio').html(template);
-        })
+        });
     }
-    
+
     function rellenar_tipos() {
-        funcion="rellenar_tipos";
-        $.post('../controlador/TipoController.php',{funcion},(response)=>{
-            const tipos=JSON.parse(response);
-            let template='';
-            tipos.forEach(tipo=>{
-                template+=`
-                    <option value="${tipo.id}">${tipo.nombre}</option>
-                `;
+        $.post('/producto/rellenar_tipos', {}, (response) => {
+            let template = '';
+            response.forEach(tipo => {
+                template += `<option value="${tipo.id}">${tipo.nombre}</option>`;
             });
             $('#modal_tipo').html(template);
-        })
+        });
     }
 
     function rellenar_presentaciones() {
-        funcion="rellenar_presentaciones";
-        $.post('../controlador/PresentacionController.php',{funcion},(response)=>{
-            const presentaciones=JSON.parse(response);
-            let template='';
-            presentaciones.forEach(presentacion=>{
-                template+=`
-                    <option value="${presentacion.id}">${presentacion.nombre}</option>
-                `;
+        $.post('/producto/rellenar_presentaciones', {}, (response) => {
+            let template = '';
+            response.forEach(pres => {
+                template += `<option value="${pres.id}">${pres.nombre}</option>`;
             });
             $('#modal_presentacion').html(template);
-        })
-    }
-    $('#form-crear-producto').submit(e=>{
-        let id=$('#id_edit_prod').val();
-        let nombre=$('#nombre_producto').val();
-        let concentracion=$('#concentracion').val();
-        let adicional=$('#adicional').val();
-        let precio=$('#precio').val();
-        let laboratorio=$('#modal_laboratorio').val();
-        let tipo=$('#modal_tipo').val();
-        let presentacion=$('#modal_presentacion').val();
-        if (edit==true){
-            funcion="editar";
-        }else{
-            funcion="crear";
-        }
-        $.post('../controlador/ProductoController.php',{funcion,id,nombre,concentracion,adicional,precio,laboratorio,tipo,presentacion},(response)=>{
-            
-            if (response=='add') {
-                $('#add').hide('slow');
-                $('#add').show(1000);
-                $('#add').hide(2000);
-                $('#form-crear-producto').trigger('reset');
-                buscar_producto();
-            } 
-            else if (response=='edit'){
-                $('#edit_prod').hide('slow');
-                $('#edit_prod').show(1000);
-                $('#edit_prod').hide(2000);
-                $('#form-crear-producto').trigger('reset');
-                buscar_producto();    
-            }
-            else{
-                $('#noadd').hide('slow');
-                $('#noadd').show(1000);
-                $('#noadd').hide(2000);
-                $('#form-crear-producto').trigger('reset');
-            }
         });
+    }
+
+    function rellenar_proveedores() {
+        $.post('/producto/rellenar_proveedores', {}, (response) => {
+            let template = '';
+            response.forEach(prov => {
+                template += `<option value="${prov.id}">${prov.nombre}</option>`;
+            });
+            $('#proveedor').html(template);
+        });
+    }
+
+    $('#form-crear-producto').submit(e => {
         e.preventDefault();
+        let data = {
+            id: $('#id_edit_prod').val(),
+            nombre: $('#nombre_producto').val(),
+            concentracion: $('#concentracion').val(),
+            adicional: $('#adicional').val(),
+            precio: $('#precio').val(),
+            laboratorio: $('#modal_laboratorio').val(),
+            tipo: $('#modal_tipo').val(),
+            presentacion: $('#modal_presentacion').val()
+        };
+        const ruta = edit ? '/producto/editar' : '/producto/crear';
+
+        $.post(ruta, data, (res) => {
+            if (res.msg === 'add') {
+                $('#add').hide('slow').show(1000).hide(2000);
+            } else if (res.msg === 'edit') {
+                $('#edit_prod').hide('slow').show(1000).hide(2000);
+            } else {
+                $('#noadd').hide('slow').show(1000).hide(2000);
+            }
+            $('#form-crear-producto').trigger('reset');
+            edit = false;
+            buscar_producto();
+        });
     });
-    function buscar_producto(consulta){
-        funcion="buscar";
-        $.post('../controlador/ProductoController.php',{consulta,funcion},(response)=>{
-            const productos=JSON.parse(response);
-            let template=``;
-            productos.forEach(producto=>{
-                template+=`
-                <div prodId="${producto.id}"prodNombre="${producto.nombre}"prodPrecio="${producto.precio}"prodConcentracion="${producto.concentracion}"prodAdicional="${producto.adicional}"prodLaboratorio="${producto.laboratorio_id}" prodTipo="${producto.tipo_id}" prodPresentacion="${producto.presentacion_id}" prodAvatar="${producto.avatar}" class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
-              <div class="card bg-light d-flex flex-fill">
-                <div class="card-header text-muted border-bottom-0">
-                    <i class="fas fa-lg fa-cubes mr-1"></i>${producto.stock}
-                </div>
-                <div class="card-body pt-0">
-                  <div class="row">
-                    <div class="col-7">
-                      <h2 class="lead"><b>${producto.nombre}</b></h2>
-                      <h4 class="lead"><b><i class="fas fa-lg fa-money-bill-1 mr-1"></i>${producto.precio}</b></h4>
-                      <ul class="ml-4 mb-0 fa-ul text-muted">
-                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-mortar-pestle"></i></span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Concentracion: ${producto.concentracion}</font></font></li>
-                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-prescription-bottle"></i></span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Adicional: ${producto.adicional}</font></font></li>
-                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-flask"></i></span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Laboratorio: ${producto.laboratorio}</font></font></li>
-                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-copyright"></i></span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Tipo: ${producto.tipo}</font></font></li>
-                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-pills"></i></span><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Presentacion: ${producto.presentacion}</font></font></li>
-                      </ul>
-                    </div>
-                    <div class="col-5 text-center">
-                      <img src="${producto.avatar}" alt="avatar de usuario" class="img-circle img-fluid">
-                    </div>
-                  </div>
-                </div>
-                <div class="card-footer">
-                  <div class="text-right">`;
-                  if (tipo_usuario == 1) {
+
+    function buscar_producto(consulta = '') {
+        $.post('/producto/buscar', { consulta }, (productos) => {
+            let template = '';
+            productos.forEach(p => {
+                template += `
+                <div prodId="${p.id}" prodNombre="${p.nombre}" prodPrecio="${p.precio}" prodConcentracion="${p.concentracion}" prodAdicional="${p.adicional}" prodLaboratorio="${p.laboratorio_id}" prodTipo="${p.tipo_id}" prodPresentacion="${p.presentacion_id}" prodAvatar="${p.avatar}" class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
+                    <div class="card bg-light d-flex flex-fill">
+                        <div class="card-header text-muted border-bottom-0">
+                            <i class="fas fa-lg fa-cubes mr-1"></i>${p.stock}
+                        </div>
+                        <div class="card-body pt-0">
+                            <div class="row">
+                                <div class="col-7">
+                                    <h2 class="lead"><b>${p.nombre}</b></h2>
+                                    <h4 class="lead"><b><i class="fas fa-lg fa-money-bill-1 mr-1"></i>${p.precio}</b></h4>
+                                    <ul class="ml-4 mb-0 fa-ul text-muted">
+                                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-mortar-pestle"></i></span>Concentración: ${p.concentracion}</li>
+                                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-prescription-bottle"></i></span>Adicional: ${p.adicional}</li>
+                                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-flask"></i></span>Laboratorio: ${p.laboratorio}</li>
+                                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-copyright"></i></span>Tipo: ${p.tipo}</li>
+                                        <li class="small"><span class="fa-li"><i class="fas fa-lg fa-pills"></i></span>Presentación: ${p.presentacion}</li>
+                                    </ul>
+                                </div>
+                                <div class="col-5 text-center">
+                                    <img src="${p.avatar}" alt="avatar" class="img-circle img-fluid">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="text-right">`;
+                if (tipo_usuario == 1) {
                     template += `
-                        <button class="avatar btn btn-sm bg-teal" type="button" data-toggle="modal" data-target="#cambiologoip">
-                            <i class="fas fa-image"></i>
-                        </button>
-                        <button class="editar btn btn-sm btn-success" type="button" data-toggle="modal" data-target="#crearproducto">
-                            <i class="fas fa-pencil-alt"></i>
-                        </button>
-                        <button class="lote btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#crearlote">
-                            <i class="fas fa-plus-square"></i>
-                        </button>
-                        <button class="borrarip btn btn-sm btn-danger">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    `;
+                        <button class="avatar btn btn-sm bg-teal" data-toggle="modal" data-target="#cambiologoip"><i class="fas fa-image"></i></button>
+                        <button class="editar btn btn-sm btn-success" data-toggle="modal" data-target="#crearproducto"><i class="fas fa-pencil-alt"></i></button>
+                        <button class="lote btn btn-sm btn-primary" data-toggle="modal" data-target="#crearlote"><i class="fas fa-plus-square"></i></button>
+                        <button class="borrarip btn btn-sm btn-danger"><i class="fas fa-trash-alt"></i></button>`;
                 }
-                template+=`
-                  </div>
-                </div>
-              </div>
-            </div>
-                `;
+                template += `</div></div></div></div>`;
             });
             $('#productos').html(template);
         });
     }
-    $(document).on('keyup','#buscar-producto',function(){
-        let valor=$(this).val();
-        if (valor!="") {
-            buscar_producto(valor);
-        } else {
-            buscar_producto();
-        }
 
+    $(document).on('keyup', '#buscar-producto', function(){
+        buscar_producto($(this).val());
     });
 
-    $(document).on('click','.avatar',(e)=>{
-        funcion="cambiar_avatar";
-        const elemento=$(this)[0].activeElement.parentElement.parentElement.parentElement.parentElement;
-        const id=$(elemento).attr('prodId');
-        const avatar=$(elemento).attr('prodAvatar');
-        const nombre=$(elemento).attr('prodNombre');
-        $('#funcionip').val(funcion);
-        $('#id_logo_prod').val(id);
-        $('#avatarip').val(avatar);
-        $('#logoactual_ip').attr('src',avatar);
-        $('#nombre_logoip').html(nombre);
-
-    });
-    $(document).on('click','.lote',(e)=>{
-        const elemento=$(this)[0].activeElement.parentElement.parentElement.parentElement.parentElement;
-        const id=$(elemento).attr('prodId');
-        const nombre=$(elemento).attr('prodNombre');
-        $('#id_lote_prod').val(id);
-        $('#nombre_producto_lote').html(nombre);
+    $(document).on('click', '.avatar', function(){
+        const el = $(this).closest('[prodId]');
+        $('#funcionip').val('cambiar_avatar');
+        $('#id_logo_prod').val(el.attr('prodId'));
+        $('#avatarip').val(el.attr('prodAvatar'));
+        $('#logoactual_ip').attr('src', el.attr('prodAvatar'));
+        $('#nombre_logoip').html(el.attr('prodNombre'));
     });
 
-    $('#form-logo-ip').submit(e=>{
-        let formData=new FormData($('#form-logo-ip')[0]);
+    $('#form-logo-ip').submit(e => {
+        const formData = new FormData($('#form-logo-ip')[0]);
         $.ajax({
-            url:'../controlador/ProductoController.php',
-            type:'POST',
-            data:formData,
-            cache:false,
-            processData:false,
-            contentType:false
-        }).done(function(response){
-            
-            const json=JSON.parse(response);
-            if(json.alert=='edit'){
-                $('#logoactual_ip').attr('src',json.ruta);
-                $('#editip').hide('slow');
-                $('#editip').show(1000);
-                $('#editip').hide(2000);
+            url: '/producto/cambiar_avatar',
+            type: 'POST',
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            success: (res) => {
+                if (res.alert === 'edit') {
+                    $('#logoactual_ip').attr('src', res.ruta);
+                    $('#editip').hide('slow').show(1000).hide(2000);
+                    buscar_producto();
+                } else {
+                    $('#noeditip').hide('slow').show(1000).hide(2000);
+                }
                 $('#form-logo-ip').trigger('reset');
-                buscar_producto();
             }
-            if(json.alert=='noedit'){
-                $('#noeditip').hide('slow');
-                $('#noeditip').show(1000);
-                $('#noeditip').hide(2000);
-                $('#form-logo-ip').trigger('reset');  
-            }
-        })
+        });
         e.preventDefault();
     });
 
-    $(document).on('click','.editar',(e)=>{
-        const elemento=$(this)[0].activeElement.parentElement.parentElement.parentElement.parentElement;
-        const id=$(elemento).attr('prodId');
-        const nombre=$(elemento).attr('prodNombre');
-        const concentracion=$(elemento).attr('prodConcentracion');
-        const adicional=$(elemento).attr('prodAdicional');
-        const precio=$(elemento).attr('prodPrecio');
-        const laboratorio=$(elemento).attr('prodLaboratorio');
-        const tipo=$(elemento).attr('prodTipo');
-        const presentacion=$(elemento).attr('prodPresentacion');
-        $('#id_edit_prod').val(id);
-        $('#nombre_producto').val(nombre);
-        $('#concentracion').val(concentracion);
-        $('#adicional').val(adicional);
-        $('#precio').val(precio);
-        $('#modal_laboratorio').val(laboratorio).trigger('change');
-        $('#modal_tipo').val(tipo).trigger('change');
-        $('#modal_presentacion').val(presentacion).trigger('change');
-        edit=true;
+    $(document).on('click', '.editar', function(){
+        const el = $(this).closest('[prodId]');
+        $('#id_edit_prod').val(el.attr('prodId'));
+        $('#nombre_producto').val(el.attr('prodNombre'));
+        $('#concentracion').val(el.attr('prodConcentracion'));
+        $('#adicional').val(el.attr('prodAdicional'));
+        $('#precio').val(el.attr('prodPrecio'));
+        $('#modal_laboratorio').val(el.attr('prodLaboratorio')).trigger('change');
+        $('#modal_tipo').val(el.attr('prodTipo')).trigger('change');
+        $('#modal_presentacion').val(el.attr('prodPresentacion')).trigger('change');
+        edit = true;
     });
-    $(document).on('click','.borrarip',(e)=> {
-        funcion = "borrarip"; 
-        const elemento = $(this)[0].activeElement.parentElement.parentElement.parentElement.parentElement;
-        const id = $(elemento).attr('prodId');
-        const nombre = $(elemento).attr('prodNombre'); 
-        const avatar = $(elemento).attr('prodAvatar');
-        const swalWithBootstrapButtons = Swal.mixin({
-            customClass: {
-              confirmButton: "btn btn-success",
-              cancelButton: "btn btn-danger mr-1"
-            },
-            buttonsStyling: false
-          });
-          swalWithBootstrapButtons.fire({
-            title: 'Eliminar '+nombre+'?',
-            text: 'Nose puede recuperar esto',
-            imageUrl:''+avatar+'',
-            imagenWigth:100,
-            imagenHeigth:100,
+
+    $(document).on('click', '.borrarip', function(){
+        const el = $(this).closest('[prodId]');
+        const id = el.attr('prodId');
+        const nombre = el.attr('prodNombre');
+        const avatar = el.attr('prodAvatar');
+
+        Swal.fire({
+            title: `Eliminar ${nombre}?`,
+            text: 'No se puede recuperar esto',
+            imageUrl: avatar,
             showCancelButton: true,
-            confirmButtonText: '¡si, borra esto!',
-            cancelButtonText: 'No, Cancelar', 
-            reverseButtons: true
-          }).then((result) => {
+            confirmButtonText: '¡Sí, borrar!',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
             if (result.isConfirmed) {
-                $.post('../controlador/ProductoController.php',{id,funcion},(response)=>{
-                    
-                    edit=false;  
-                    if (response=='borrado') {
-                        swalWithBootstrapButtons.fire(
-                            'borrado!',
-                            'El producto '+nombre+' fue borrado',
-                            'success'
-                        )
+                $.post('/producto/borrar', {id}, (res) => {
+                    if (res.msg === 'borrado') {
+                        Swal.fire('¡Borrado!', `${nombre} fue eliminado.`, 'success');
                         buscar_producto();
-                    } 
-                    else {
-                        swalWithBootstrapButtons.fire(
-                            'No se puede borrar!',
-                            'El producto '+nombre+' no puede ser borrado, hay lotes con el producto',
-                            'error'
-                        )
-                         
+                    } else {
+                        Swal.fire('Error', `No se puede borrar ${nombre}, tiene lotes registrados.`, 'error');
                     }
-                })
-            } else if (
-            result.dismiss === Swal.DismissReason.cancel
-            ) {
-              swalWithBootstrapButtons.fire({
-                title: 'Cancelado',
-                text: 'El producto '+nombre+' no fue borrado',
-                icon: 'error'
-              });
+                });
             }
-          });   
-    })
-    $('#form-crear-lote').submit(e=>{
-        let id_producto=$('#id_lote_prod').val();
-        let proveedor=$('#proveedor').val();
-        let stock=$('#stock').val();
-        let vencimiento=$('#vencimiento').val();
-        funcion='crearlote';
-        $.post('../controlador/LoteController.php',{funcion,vencimiento,stock,proveedor,id_producto},(response)=>{
-            
-            $('#add-lote').hide('slow');
-            $('#add-lote').show(1000);
-            $('#add-lote').hide(2000);
+        });
+    });
+
+    $(document).on('click', '.lote', function(){
+        const el = $(this).closest('[prodId]');
+        $('#id_lote_prod').val(el.attr('prodId'));
+        $('#nombre_producto_lote').html(el.attr('prodNombre'));
+    });
+
+    $('#form-crear-lote').submit(e => {
+        e.preventDefault();
+        let data = {
+            id_producto: $('#id_lote_prod').val(),
+            proveedor: $('#proveedor').val(),
+            stock: $('#stock').val(),
+            vencimiento: $('#vencimiento').val()
+        };
+        $.post('/producto/crearlote', data, (res) => {
+            $('#add-lote').hide('slow').show(1000).hide(2000);
             $('#form-crear-lote').trigger('reset');
             buscar_producto();
         });
-        e.preventDefault();
-
     });
-})
+});

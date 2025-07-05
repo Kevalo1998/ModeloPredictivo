@@ -128,5 +128,9 @@
     </div>
   </section>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/Gestion_usuario.js') }}"></script>
 {% endblock %}

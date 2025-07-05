@@ -1,33 +1,33 @@
-$(document).ready(function(){
-    var tipo_usuario=$('#tipo_usuario').val();
+$(document).ready(function () {
+    var tipo_usuario = $('#tipo_usuario').val();
     buscar_datos();
-    if (tipo_usuario==3||tipo_usuario==4) {
+    if (tipo_usuario == 3 || tipo_usuario == 4) {
         $('#button-crear').hide();
     }
-    var funcion;
-    function buscar_datos(consulta) {
-        funcion='buscar_usuarios_adm';
-        $.post('../controlador/UsuarioController.php', { consulta, funcion }, (response) => {
-            const usuarios = JSON.parse(response);
+
+    function buscar_datos(consulta = '') {
+        $.post('/usuario/listar', { consulta }, (usuarios) => {
             let template = '';
             usuarios.forEach(usuario => {
                 template += `
                     <div usuarioId="${usuario.id}" class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
                         <div class="card bg-light d-flex flex-fill">
                             <div class="card-header text-muted border-bottom-0">`;
-                            if (usuario.tipo_usuario==1) {
-                                template+=`<h1 class="badge badge-danger">${usuario.tipo}</h1>`;
-                            }
-                            if (usuario.tipo_usuario==2) {
-                                template+=`<h1 class="badge badge-warning">${usuario.tipo}</h1>`;
-                            }
-                            if (usuario.tipo_usuario==3) {
-                                template+=`<h1 class="badge badge-info">${usuario.tipo}</h1>`;
-                            }
-                            if (usuario.tipo_usuario==4) {
-                                template+=`<h1 class="badge badge-primary">${usuario.tipo}</h1>`;
-                            }
-                            template +=`</div>
+
+                if (usuario.tipo_usuario == 1) {
+                    template += `<h1 class="badge badge-danger">${usuario.tipo}</h1>`;
+                }
+                if (usuario.tipo_usuario == 2) {
+                    template += `<h1 class="badge badge-warning">${usuario.tipo}</h1>`;
+                }
+                if (usuario.tipo_usuario == 3) {
+                    template += `<h1 class="badge badge-info">${usuario.tipo}</h1>`;
+                }
+                if (usuario.tipo_usuario == 4) {
+                    template += `<h1 class="badge badge-primary">${usuario.tipo}</h1>`;
+                }
+
+                template += `</div>
                             <div class="card-body pt-0">
                                 <div class="row">
                                     <div class="col-7">
@@ -49,126 +49,102 @@ $(document).ready(function(){
                             </div>
                             <div class="card-footer">
                                 <div class="text-right">`;
-                                    if (tipo_usuario==1) {
-                                        if (usuario.tipo_usuario!=1) {
-                                            template+=`
-                                            <button class="borrar-usuario btn btn-danger mr-1" data-toggle="modal" data-target="#confirmar">
+
+                if (tipo_usuario == 1) {
+                    if (usuario.tipo_usuario != 1) {
+                        template += `<button class="borrar-usuario btn btn-danger mr-1" data-toggle="modal" data-target="#confirmar">
                                             <i class="fas fa-window-close mr-1"></i>Eliminar
-                                            </button>
-                                            `;
-                                        }
-                                        if (usuario.tipo_usuario==3||usuario.tipo_usuario==4) {
-                                            template+=`
-                                            <button class="ascender btn btn-primary mr-1" type="button" data-toggle="modal" data-target="#confirmar">
+                                            </button>`;
+                    }
+                    if (usuario.tipo_usuario == 3 || usuario.tipo_usuario == 4) {
+                        template += `<button class="ascender btn btn-primary mr-1" type="button" data-toggle="modal" data-target="#confirmar">
                                             <i class="fas fa-sort-amount-up mr-1"></i>Ascender
-                                            </button>
-                                            `; 
-                                        }
-
-                                        if (usuario.tipo_usuario==2) {
-                                            template+=`
-                                            <button class="descender btn btn-secondary mr-1" data-toggle="modal" data-target="#confirmar">
+                                            </button>`;
+                    }
+                    if (usuario.tipo_usuario == 2) {
+                        template += `<button class="descender btn btn-secondary mr-1" data-toggle="modal" data-target="#confirmar">
                                             <i class="fas fa-sort-amount-down mr-1"></i>Descender
-                                            </button>
-                                            `;
-                                        }
-                                    } else {
-                                        if (tipo_usuario==2 && usuario.tipo_usuario!=2 && usuario.tipo_usuario!=1) {
-                                            template+=`
-                                            <button class="borrar-usuario btn btn-danger mr-1" data-toggle="modal" data-target="#confirmar">
+                                            </button>`;
+                    }
+                } else {
+                    if (tipo_usuario == 2 && usuario.tipo_usuario != 2 && usuario.tipo_usuario != 1) {
+                        template += `<button class="borrar-usuario btn btn-danger mr-1" data-toggle="modal" data-target="#confirmar">
                                             <i class="fas fa-window-close mr-1"></i>Eliminar
-                                            </button>
-                                            `; 
-                                        }
-                                    }
+                                            </button>`;
+                    }
+                }
 
-                                    template+=`
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                template += `</div></div></div></div>`;
             });
             $('#usuarios').html(template);
         });
     }
-    $(document).on('keyup','#buscar',function(){
-        let valor=$(this).val();
-        if (valor!="") {
-            buscar_datos(valor);
-        } else {
-            buscar_datos();
-        }
 
+    $(document).on('keyup', '#buscar', function () {
+        let valor = $(this).val();
+        buscar_datos(valor);
     });
 
-    $('#form-crear').submit(e=>{
-        let nombre =$('#nombre').val();
-        let apellido =$('#apellido').val();
-        let edad =$('#edad').val();
-        let dni =$('#dni').val();
-        let pass =$('#pass').val();
-        funcion='crear_usuario';
-        $.post('../controlador/UsuarioController.php',{nombre,apellido,edad,dni,pass,funcion},(response)=>{
-            if (response=='add') {
-                $('#add').hide('slow');
-                $('#add').show(1000);
-                $('#add').hide(2000);
+    $('#form-crear').submit(e => {
+        e.preventDefault();
+        let nombre = $('#nombre').val();
+        let apellido = $('#apellido').val();
+        let edad = $('#edad').val();
+        let dni = $('#dni').val();
+        let pass = $('#pass').val();
+        $.post('/usuario/crear', { nombre, apellido, edad, dni, pass }, (response) => {
+            if (response.msg === 'usuario_creado') {
+                $('#add').fadeIn().delay(2000).fadeOut();
                 $('#form-crear').trigger('reset');
                 buscar_datos();
-            }
-            else{
-                $('#noadd').hide('slow');
-                $('#noadd').show(1000);
-                $('#noadd').hide(2000);
+            } else {
+                $('#noadd').fadeIn().delay(2000).fadeOut();
                 $('#form-crear').trigger('reset');
             }
         });
+    });
+
+    $(document).on('click', '.ascender', (e) => {
+        const elemento = $(e.currentTarget).closest('[usuarioId]');
+        const id = $(elemento).attr('usuarioId');
+        $('#id_user').val(id);
+        $('#funcion').val('ascender');
+    });
+
+    $(document).on('click', '.descender', (e) => {
+        const elemento = $(e.currentTarget).closest('[usuarioId]');
+        const id = $(elemento).attr('usuarioId');
+        $('#id_user').val(id);
+        $('#funcion').val('descender');
+    });
+
+    $(document).on('click', '.borrar-usuario', (e) => {
+        const elemento = $(e.currentTarget).closest('[usuarioId]');
+        const id = $(elemento).attr('usuarioId');
+        $('#id_user').val(id);
+        $('#funcion').val('borrar_usuario');
+    });
+
+    $('#form-confirmar').submit(e => {
         e.preventDefault();
-    });
+        let pass = $('#oldpass').val();
+        let id_usuario = $('#id_user').val();
+        let funcion = $('#funcion').val();
+        let url_map = {
+            'ascender': '/usuario/ascender',
+            'descender': '/usuario/descender',
+            'borrar_usuario': '/usuario/borrar'
+        };
+        let url = url_map[funcion];
 
-    $(document).on('click','.ascender',(e)=>{
-        const elemento = $(this)[0].activeElement.parentElement.parentElement.parentElement.parentElement;
-        const id=$(elemento).attr('usuarioId');
-        funcion='ascender';
-        $('#id_user').val(id);
-        $('#funcion').val(funcion);
-    });
-
-    $(document).on('click','.descender',(e)=>{
-        const elemento = $(this)[0].activeElement.parentElement.parentElement.parentElement.parentElement;
-        const id=$(elemento).attr('usuarioId');
-        funcion='descender';
-        $('#id_user').val(id);
-        $('#funcion').val(funcion);
-    });
-
-    $(document).on('click','.borrar-usuario',(e)=>{
-        const elemento = $(this)[0].activeElement.parentElement.parentElement.parentElement.parentElement;
-        const id=$(elemento).attr('usuarioId');
-        funcion='borrar_usuario';
-        $('#id_user').val(id);
-        $('#funcion').val(funcion);
-    });
-
-    $('#form-confirmar').submit(e=>{
-        let pass=$('#oldpass').val();
-        let id_usuario=$('#id_user').val();
-        funcion=$('#funcion').val();
-        $.post('../controlador/UsuarioController.php',{pass,id_usuario,funcion},(response)=>{
-            if (response=='ascendido'||response=='descendido'||response=='borrado') {
-                $('#confirmado').hide('slow');
-                $('#confirmado').show(1000);
-                $('#confirmado').hide(2000);
-                $('#form-confirmar').trigger('reset');
+        $.post(url, { pass, id_usuario }, (response) => {
+            if (response.msg === 'ascendido' || response.msg === 'descendido' || response.msg === 'borrado') {
+                $('#confirmado').fadeIn().delay(2000).fadeOut();
             } else {
-                $('#rechazado').hide('slow');
-                $('#rechazado').show(1000);
-                $('#rechazado').hide(2000);
-                $('#form-confirmar').trigger('reset'); 
+                $('#rechazado').fadeIn().delay(2000).fadeOut();
             }
+            $('#form-confirmar').trigger('reset');
             buscar_datos();
         });
-        e.preventDefault();
     });
-})
+});

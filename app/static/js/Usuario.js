@@ -6,7 +6,7 @@ $(document).ready(function () {
 
     function buscar_usuario(dato) {
         $.post('/usuario/buscar', { dato }, (response) => {
-            const usuario = JSON.parse(response);
+            const usuario = response;
             $('#nombre_us').html(usuario.nombre);
             $('#apellidos_us').html(usuario.apellidos);
             $('#edad').html(usuario.edad);
@@ -34,14 +34,14 @@ $(document).ready(function () {
             $('#sexo_us').html(usuario.sexo);
             $('#adicional_us').html(usuario.adicional);
 
-            $('#avatar1, #avatar2, #avatar3, #avatar4').attr('src', usuario.avatar);
+            $('#avatar').attr('src', usuario.avatar);
         });
     }
 
     $(document).on('click', '.edit', (e) => {
         edit = true;
         $.post('/usuario/capturar', { id_usuario }, (response) => {
-            const usuario = JSON.parse(response);
+            const usuario = response;
             $('#telefono').val(usuario.telefono);
             $('#residencia').val(usuario.residencia);
             $('#correo').val(usuario.correo);
@@ -102,10 +102,9 @@ $(document).ready(function () {
             cache: false,
             processData: false,
             contentType: false
-        }).done((response) => {
-            const json = JSON.parse(response);
+        }).done((json) => {
             if (json.alert === 'edit') {
-                $('#avatar1, #avatar2, #avatar3, #avatar4').attr('src', json.ruta);
+                $('#avatar').attr('src', json.ruta);
                 $('#edit').fadeIn().delay(2000).fadeOut();
                 $('#form-photo').trigger('reset');
                 buscar_usuario(id_usuario);

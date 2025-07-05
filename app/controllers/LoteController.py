@@ -1,65 +1,64 @@
 from flask import Blueprint, request, jsonify
-from app.models.lote import Lote
 from datetime import datetime
+from app.models.lote import Lote
 
 lote_bp = Blueprint('lote', __name__)
 lote_model = Lote()
 
 @lote_bp.route('/lote/crear', methods=['POST'])
 def crear_lote():
-    data = request.form
-    lote_model.crear_lote(
-        data['id_producto'],
-        data['proveedor'],
-        data['stock'],
-        data['vencimiento']
-    )
-    return jsonify({'status': 'ok'})
+    id_producto = request.form.get('id_producto')
+    proveedor = request.form.get('proveedor')
+    stock = request.form.get('stock')
+    vencimiento = request.form.get('vencimiento')
+    resultado = lote_model.crearlote(id_producto, proveedor, stock, vencimiento)
+    return resultado
 
 @lote_bp.route('/lote/editar', methods=['POST'])
 def editar_lote():
-    data = request.form
-    lote_model.editar_lote(data['id'], data['stock'])
-    return jsonify({'status': 'ok'})
-
+    id_lote = request.form.get('id')
+    stock = request.form.get('stock')
+    resultado = lote_model.editarlote(id_lote, stock)
+    return resultado
 @lote_bp.route('/lote/buscar', methods=['POST'])
 def buscar_lotes():
-    objetos = lote_model.buscar()
-    json = []
-    fecha_actual = datetime.now()
+    consulta = request.form.get('consulta', '')
+    lotes = lote_model.buscar(consulta)
+    resultado = []
+    fecha_actual = datetime.now().date()  # ✅ Convertido a date
 
-    for obj in objetos:
-        vencimiento = datetime.strptime(obj['vencimiento'], '%Y-%m-%d')
+    for lote in lotes:
+        vencimiento = lote['vencimiento']  # ✅ Es date
         diferencia = vencimiento - fecha_actual
-        dias = abs(diferencia.days)
-        mes = abs(diferencia.days // 30)
-        estado = 'light'
-        if diferencia.days < 0:
+        dias = diferencia.days
+        invertido = 1 if dias >= 0 else 0
+        dias = abs(dias)
+        estado = 'light' if dias > 90 else 'warning'
+        if invertido == 0:
             estado = 'danger'
-        elif mes <= 3:
-            estado = 'warning'
 
-        json.append({
-            'id': obj['id_lote'],
-            'nombre': obj['prod_nom'],
-            'concentracion': obj['concentracion'],
-            'adicional': obj['adicional'],
-            'vencimiento': obj['vencimiento'],
-            'proveedor': obj['proveedor'],
-            'stock': obj['stock'],
-            'laboratorio': obj['lab_nom'],
-            'tipo': obj['tip_nom'],
-            'presentacion': obj['pre_nom'],
-            'avatar': f"/static/img/prod/{obj['logo']}",
-            'mes': mes,
+        resultado.append({
+            'id': lote['id_lote'],
+            'nombre': lote['prod_nom'],
+            'concentracion': lote['concentracion'],
+            'adicional': lote['adicional'],
+            'vencimiento': vencimiento.strftime('%Y-%m-%d'),
+            'proveedor': lote['proveedor'],
+            'stock': lote['stock'],
+            'laboratorio': lote['lab_nom'],
+            'tipo': lote['tip_nom'],
+            'presentacion': lote['pre_nom'],
+            'avatar': f'/static/img/prod/{lote["logo"]}',
+            'mes': dias // 30,
             'dia': dias % 30,
             'estado': estado,
-            'invert': 1 if diferencia.days >= 0 else 0
+            'invert': invertido,
         })
-    return jsonify(json)
+
+    return jsonify(resultado)
 
 @lote_bp.route('/lote/borrar', methods=['POST'])
 def borrar_lote():
-    data = request.form
-    lote_model.borrar_lote(data['id'])
-    return jsonify({'status': 'borrado'})
+    id_lote = request.form.get('id')
+    resultado = lote_model.borrarlote(id_lote)
+    return resultado
